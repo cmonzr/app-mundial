@@ -292,6 +292,68 @@
     }
     .card.passed .passed-badge { display: inline-block; }
 
+    /* MATCHES */
+    .matches-section {
+      margin-top: 14px;
+      border-top: 1px solid var(--card-border);
+      padding-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .match-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      background: #0a0f0c;
+      border-radius: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--card-border);
+    }
+    .match-row.live {
+      border-color: var(--green-light);
+      background: #0f2017;
+      animation: pulse-border 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: var(--green-light); }
+      50% { border-color: #1a6b2e; }
+    }
+    .match-teams {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .match-our { font-weight: 700; color: var(--text); }
+    .match-vs { color: var(--text-muted); font-size: 0.65rem; }
+    .match-opp { color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; }
+    .match-score {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      color: var(--text);
+      min-width: 32px;
+      text-align: center;
+    }
+    .match-score.loss { color: var(--red); }
+    .match-score.win  { color: var(--green-light); }
+    .match-status {
+      font-size: 0.6rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .status-scheduled { background: #1e3325; color: var(--text-muted); }
+    .status-live      { background: var(--green-light); color: #000; }
+    .status-finished  { background: #1a1a1a; color: #555; }
+    .match-date { font-size: 0.62rem; color: var(--text-muted); min-width: 36px; text-align: right; }
+
     /* RANKING */
     .ranking-list {
       display: flex;
@@ -581,6 +643,19 @@
   const ADMIN_PASS = "paquete2026";
   const API = "/api/data";
 
+  // Mapeo: nombre API (inglés) → id de nuestro sponsor
+  const TEAM_API_MAP = {
+    "Qatar":        1,
+    "Curaçao":      2,
+    "Ghana":        3,
+    "South Africa": 4,
+    "Haiti":        5,
+    "New Zealand":  6,
+    "Saudi Arabia": 7,
+  };
+
+  let matchesData = []; // partidos de la API
+
   const DEFAULT_DATA = {
     sponsors: [
       { id:1, name:"Josi",   team:"QATAR",        flag:"🇶🇦", group:"B", opponents:["🇨🇭 SUIZA","🇨🇦 CANADÁ","🇧🇦 BOSNIA Y HERZ"], goals:0, passed:false },
@@ -607,6 +682,60 @@
       const remote = await res.json();
       if (remote && remote.sponsors) { data = remote; render(); }
     } catch (e) { console.warn("API no disponible, usando datos por defecto."); }
+  }
+
+  async function fetchMatches() {
+    try {
+      const res = await fetch("/api/matches");
+      const json = await res.json();
+      if (Array.isArray(json)) { matchesData = json; render(); }
+    } catch (e) { console.warn("No se pudieron cargar los partidos."); }
+  }
+
+  function getTeamMatches(sponsorId) {
+    // Encuentra el nombre API de este sponsor
+    const apiName = Object.entries(TEAM_API_MAP).find(([,id]) => id === sponsorId)?.[0];
+    if (!apiName) return [];
+    return matchesData.filter(m => m.homeTeam === apiName || m.awayTeam === apiName);
+  }
+
+  function renderMatch(m, sponsorId) {
+    const apiName = Object.entries(TEAM_API_MAP).find(([,id]) => id === sponsorId)?.[0];
+    const isHome = m.homeTeam === apiName;
+    const ourScore  = isHome ? m.homeScore : m.awayScore;
+    const oppScore  = isHome ? m.awayScore : m.homeScore;
+    const oppName   = isHome ? m.awayTeam  : m.homeTeam;
+
+    const isLive     = m.status === "IN_PLAY" || m.status === "PAUSED";
+    const isFinished = m.status === "FINISHED";
+    const isScheduled = m.status === "SCHEDULED" || m.status === "TIMED";
+
+    let scoreHtml, statusHtml, rowClass = "";
+    if (isScheduled || (!isFinished && !isLive)) {
+      const d = new Date(m.utcDate);
+      const label = d.toLocaleDateString("es-ES", { day:"2-digit", month:"short" });
+      const hour  = d.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" });
+      scoreHtml  = `<span class="match-date">${label}<br>${hour}</span>`;
+      statusHtml = `<span class="match-status status-scheduled">Por jugar</span>`;
+    } else if (isLive) {
+      rowClass   = "live";
+      scoreHtml  = `<span class="match-score">${ourScore ?? 0} - ${oppScore ?? 0}</span>`;
+      statusHtml = `<span class="match-status status-live">● LIVE</span>`;
+    } else {
+      const cls  = ourScore > oppScore ? "win" : ourScore < oppScore ? "loss" : "";
+      scoreHtml  = `<span class="match-score ${cls}">${ourScore} - ${oppScore}</span>`;
+      statusHtml = `<span class="match-status status-finished">FIN</span>`;
+    }
+
+    return `<div class="match-row ${rowClass}">
+      <div class="match-teams">
+        <span class="match-our">Nosotros</span>
+        <span class="match-vs">vs</span>
+        <span class="match-opp">${oppName}</span>
+      </div>
+      ${scoreHtml}
+      ${statusHtml}
+    </div>`;
   }
 
   async function saveData() {
@@ -677,6 +806,11 @@
           </div>
         </div>
         <span class="passed-badge">✓ Pasó de fase</span>
+        ${(() => {
+          const ms = getTeamMatches(s.id);
+          if (!ms.length) return '';
+          return `<div class="matches-section">${ms.map(m => renderMatch(m, s.id)).join('')}</div>`;
+        })()}
       </div>`;
     }).join("");
 
@@ -755,7 +889,8 @@
 
   render();
   fetchData();
-  setInterval(fetchData, 60_000);
+  fetchMatches();
+  setInterval(() => { fetchData(); fetchMatches(); }, 60_000);
 </script>
 </body>
 </html>
