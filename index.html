@@ -4,186 +4,277 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mundial de Paquetes 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --green: #1a6b2e;
-      --green-light: #2d9e47;
+      --green-light: #2ecc71;
       --gold: #f5c518;
       --gold-dark: #c9a010;
-      --dark: #0d1f12;
-      --card-bg: #162a1c;
-      --card-border: #2d4a35;
-      --text: #e8f5ec;
-      --text-muted: #8aab91;
+      --dark: #0a0f0c;
+      --card-bg: #111a14;
+      --card-border: #1e3325;
+      --text: #f0faf3;
+      --text-muted: #6b8f74;
       --red: #e74c3c;
-      --blue: #3498db;
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--dark);
+      background-image: radial-gradient(ellipse at 50% 0%, #1a3d2260 0%, transparent 60%);
       color: var(--text);
       min-height: 100vh;
     }
 
     /* HEADER */
     header {
-      background: linear-gradient(135deg, #0d1f12 0%, #1a6b2e 50%, #0d1f12 100%);
-      border-bottom: 3px solid var(--gold);
-      padding: 24px 20px 20px;
+      padding: 36px 20px 28px;
       text-align: center;
+      border-bottom: 1px solid var(--card-border);
       position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 60px,
+        #ffffff04 60px,
+        #ffffff04 61px
+      ), repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 60px,
+        #ffffff04 60px,
+        #ffffff04 61px
+      );
+      pointer-events: none;
+    }
+    .header-badge {
+      display: inline-block;
+      background: var(--gold);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
     }
     header h1 {
-      font-size: clamp(1.4rem, 5vw, 2.4rem);
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: var(--gold);
-      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
+      letter-spacing: 3px;
+      color: #fff;
+      line-height: 1;
+      text-shadow: 0 4px 24px rgba(0,0,0,0.6);
     }
+    header h1 span { color: var(--gold); }
     header p {
       color: var(--text-muted);
       font-size: 0.85rem;
-      margin-top: 4px;
+      margin-top: 8px;
+      font-style: italic;
     }
-    .trophy { font-size: 2rem; }
 
     /* POT */
+    .pot-wrap {
+      max-width: 500px;
+      margin: 32px auto 0;
+      padding: 0 16px;
+    }
     .pot-section {
-      background: linear-gradient(135deg, #1a3d22, #0d1f12);
-      border: 3px solid var(--gold);
-      border-radius: 16px;
-      margin: 24px auto;
-      max-width: 420px;
-      padding: 24px;
+      background: linear-gradient(135deg, #1a3d22, #0f2417);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 28px 24px;
       text-align: center;
-      box-shadow: 0 0 30px rgba(245, 197, 24, 0.2);
+      box-shadow: 0 0 60px rgba(245, 197, 24, 0.15), 0 8px 32px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    .pot-section::after {
+      content: '⚽';
+      position: absolute;
+      font-size: 8rem;
+      opacity: 0.04;
+      right: -20px;
+      bottom: -20px;
+      line-height: 1;
     }
     .pot-label {
-      font-size: 0.9rem;
+      font-size: 0.7rem;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       color: var(--gold);
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .pot-amount {
-      font-size: clamp(3rem, 10vw, 5rem);
-      font-weight: 900;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 14vw, 7rem);
       color: var(--gold);
       line-height: 1;
-      text-shadow: 0 0 20px rgba(245, 197, 24, 0.5);
+      text-shadow: 0 0 40px rgba(245, 197, 24, 0.4);
+      letter-spacing: 2px;
     }
     .pot-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      margin-top: 8px;
+      margin-top: 6px;
+    }
+    .last-update {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 10px;
     }
 
-    /* MAIN GRID */
+    /* MAIN */
     .main {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 0 16px 40px;
+      padding: 0 16px 60px;
     }
 
     .section-title {
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       color: var(--text-muted);
       text-transform: uppercase;
-      margin: 32px 0 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--card-border);
+      margin: 36px 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--card-border);
     }
 
-    /* SPONSOR CARDS */
+    /* CARDS */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
     }
 
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 18px;
-      transition: transform 0.2s, border-color 0.2s;
+      border-radius: 16px;
+      padding: 20px;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
       position: relative;
       overflow: hidden;
     }
-    .card:hover { transform: translateY(-2px); border-color: var(--green-light); }
-    .card.has-goals { border-color: #e74c3c44; }
-    .card.passed { border-color: var(--gold); background: #1a3d22; }
+    .card::before {
+      content: attr(data-flag);
+      position: absolute;
+      right: -8px;
+      top: -8px;
+      font-size: 5rem;
+      opacity: 0.08;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: #2d5a3d;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .card.has-goals { border-color: #e74c3c33; }
+    .card.passed {
+      border-color: var(--gold);
+      background: linear-gradient(135deg, #1a3d22, #111a14);
+      box-shadow: 0 0 20px rgba(245,197,24,0.1);
+    }
 
-    .card-header {
+    /* Sponsor name — BIG */
+    .sponsor-hero {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .card.passed .sponsor-hero { color: var(--gold); }
+
+    .team-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       margin-bottom: 14px;
     }
-    .flag { font-size: 2.2rem; line-height: 1; }
-    .card-names { flex: 1; }
+    .flag { font-size: 1.4rem; line-height: 1; }
+    .team-info { flex: 1; }
     .team-name {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--text);
-      letter-spacing: 0.5px;
-    }
-    .sponsor-name {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
+      font-weight: 700;
       color: var(--text-muted);
-      margin-top: 2px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
     .group-badge {
-      background: var(--green);
-      color: var(--gold);
-      font-weight: 900;
-      font-size: 0.75rem;
-      padding: 4px 8px;
+      background: #1e3325;
+      color: var(--green-light);
+      font-weight: 800;
+      font-size: 0.65rem;
+      padding: 3px 8px;
       border-radius: 6px;
       letter-spacing: 1px;
+      border: 1px solid #2d5a3d;
+    }
+    .card.passed .group-badge {
+      background: #2a3a1a;
+      color: var(--gold);
+      border-color: var(--gold-dark);
     }
 
     .opponents {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       margin-bottom: 14px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
-    .opponents strong { color: var(--text-muted); }
-    .opp-flag { margin-right: 2px; }
 
     .card-stats {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
     }
-
     .stat {
-      flex: 1;
-      background: #0d1f12;
-      border-radius: 8px;
+      background: #0a0f0c;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
       padding: 10px 8px;
       text-align: center;
     }
     .stat-value {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--text);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
       line-height: 1;
+      letter-spacing: 1px;
     }
     .stat-value.goals-val { color: var(--red); }
     .stat-value.money-val { color: var(--gold); }
     .stat-label {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--text-muted);
-      margin-top: 3px;
-      letter-spacing: 0.5px;
+      margin-top: 2px;
+      letter-spacing: 1px;
       text-transform: uppercase;
     }
 
@@ -191,154 +282,66 @@
       display: none;
       background: var(--gold);
       color: #000;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 800;
-      padding: 4px 10px;
+      padding: 3px 10px;
       border-radius: 20px;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
       text-transform: uppercase;
+      margin-top: 10px;
     }
     .card.passed .passed-badge { display: inline-block; }
 
-    /* ADMIN PANEL */
-    .admin-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--green);
-      border: 2px solid var(--gold);
-      color: var(--gold);
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-      transition: background 0.2s;
-      z-index: 100;
-    }
-    .admin-toggle:hover { background: var(--green-light); }
-
-    .admin-panel {
-      display: none;
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      background: #162a1c;
-      border: 2px solid var(--gold);
-      border-radius: 16px;
-      padding: 20px;
-      min-width: 300px;
-      max-width: 340px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-      z-index: 100;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .admin-panel.open { display: block; }
-    .admin-panel h3 {
-      color: var(--gold);
-      font-size: 0.9rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--card-border);
-    }
-
-    .admin-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      padding: 10px;
-      background: #0d1f12;
-      border-radius: 8px;
-    }
-    .admin-row-label {
-      flex: 1;
-      font-size: 0.8rem;
-    }
-    .admin-row-label strong { display: block; }
-    .admin-row-label small { color: var(--text-muted); font-size: 0.7rem; }
-
-    .goal-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .goal-btn {
-      background: var(--card-border);
-      border: none;
-      color: var(--text);
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s;
-    }
-    .goal-btn:hover { background: var(--green-light); }
-    .goal-count {
-      font-size: 1.1rem;
-      font-weight: 900;
-      min-width: 24px;
-      text-align: center;
-      color: var(--red);
-    }
-
-    .pass-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .pass-toggle input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--gold);
-    }
-    .pass-toggle label {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    /* AUTH */
-    .auth-form {
+    /* RANKING */
+    .ranking-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
-    .auth-form input {
-      background: #0d1f12;
+    .ranking-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      outline: none;
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: border-color 0.2s;
     }
-    .auth-form input:focus { border-color: var(--gold); }
-    .auth-btn {
-      background: var(--gold);
-      color: #000;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.9rem;
+    .ranking-row:first-child {
+      border-color: var(--gold);
+      background: linear-gradient(90deg, #1a3d22, var(--card-bg));
     }
-    .auth-btn:hover { background: var(--gold-dark); }
-    .auth-error { color: var(--red); font-size: 0.8rem; text-align: center; }
+    .ranking-row:nth-child(2) { border-color: #888; }
+    .ranking-row:nth-child(3) { border-color: #a0522d; }
+    .rank-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: var(--text-muted);
+      min-width: 28px;
+      text-align: center;
+    }
+    .ranking-row:first-child .rank-num { color: var(--gold); font-size: 1.8rem; }
+    .rank-flag { font-size: 1.4rem; }
+    .rank-names { flex: 1; }
+    .rank-sponsor {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+    }
+    .rank-team {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .rank-amount {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+    .rank-amount.zero { color: var(--text-muted); }
 
     /* RULES */
     .rules-list {
@@ -349,22 +352,24 @@
     }
     .rules-list li {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       align-items: flex-start;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 0.85rem;
-      line-height: 1.4;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.83rem;
+      line-height: 1.5;
+      color: var(--text-muted);
     }
+    .rules-list li strong { color: var(--text); }
     .rule-num {
       background: var(--green);
       color: var(--gold);
       font-weight: 900;
-      font-size: 0.8rem;
-      min-width: 24px;
-      height: 24px;
+      font-size: 0.75rem;
+      min-width: 26px;
+      height: 26px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -372,36 +377,143 @@
       flex-shrink: 0;
     }
 
-    /* LAST UPDATE */
-    .last-update {
-      text-align: center;
-      font-size: 0.72rem;
+    /* ADMIN */
+    .admin-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #111a14;
+      border: 2px solid var(--card-border);
       color: var(--text-muted);
-      margin-top: 8px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      transition: all 0.2s;
+      z-index: 100;
+    }
+    .admin-toggle:hover {
+      border-color: var(--gold);
+      color: var(--gold);
     }
 
+    .admin-panel {
+      display: none;
+      position: fixed;
+      bottom: 82px;
+      right: 24px;
+      background: #111a14;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      min-width: 300px;
+      max-width: 340px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.7);
+      z-index: 100;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .admin-panel.open { display: block; }
+    .admin-panel h3 {
+      color: var(--gold);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .admin-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #0a0f0c;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+    }
+    .admin-row-label { flex: 1; font-size: 0.78rem; }
+    .admin-row-label strong { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; }
+    .admin-row-label small { color: var(--text-muted); font-size: 0.65rem; }
+
+    .goal-controls { display: flex; align-items: center; gap: 6px; }
+    .goal-btn {
+      background: var(--card-border);
+      border: none;
+      color: var(--text);
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .goal-btn:hover { background: var(--green); color: #fff; }
+    .goal-count { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; min-width: 22px; text-align: center; color: var(--red); }
+
+    .pass-toggle { display: flex; align-items: center; gap: 6px; }
+    .pass-toggle input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--gold); }
+    .pass-toggle label { font-size: 0.65rem; color: var(--text-muted); cursor: pointer; }
+
+    .auth-form { display: flex; flex-direction: column; gap: 10px; }
+    .auth-form input {
+      background: #0a0f0c;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      outline: none;
+      font-family: inherit;
+    }
+    .auth-form input:focus { border-color: var(--gold); }
+    .auth-btn {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+    .auth-btn:hover { background: var(--gold-dark); }
+    .auth-error { color: var(--red); font-size: 0.75rem; text-align: center; }
+
     .save-btn {
-      background: var(--green-light);
+      background: var(--green);
       color: #fff;
       border: none;
-      padding: 10px 16px;
+      padding: 10px;
       border-radius: 8px;
       font-weight: 700;
       cursor: pointer;
       font-size: 0.85rem;
       width: 100%;
-      margin-top: 8px;
+      margin-top: 10px;
+      font-family: inherit;
+      transition: background 0.2s;
     }
-    .save-btn:hover { background: var(--green); }
+    .save-btn:hover { background: var(--green-light); color: #000; }
 
-    /* FOOTER */
     footer {
       text-align: center;
-      padding: 20px;
+      padding: 24px;
       color: var(--text-muted);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       border-top: 1px solid var(--card-border);
     }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--gold); }
 
     @media (max-width: 480px) {
       .cards-grid { grid-template-columns: 1fr; }
@@ -412,43 +524,45 @@
 <body>
 
 <header>
-  <div class="trophy">🏆</div>
-  <h1>MUNDIAL DE PAQUETES 2026</h1>
+  <div class="header-badge">⚽ FIFA World Cup 2026</div>
+  <h1>MUNDIAL DE <span>PAQUETES</span></h1>
   <p>¿Quién tiene el paquete más paquete?</p>
 </header>
 
+<div class="pot-wrap">
+  <div class="pot-section">
+    <div class="pot-label">🏆 El Gran Bote 🏆</div>
+    <div class="pot-amount" id="pot-amount">0 €</div>
+    <div class="pot-subtitle">Para la cena de los patrocinadores</div>
+  </div>
+  <div class="last-update" id="last-update"></div>
+</div>
+
 <div class="main">
 
-  <div class="pot-section">
-    <div class="pot-label">⚽ El Gran Bote ⚽</div>
-    <div class="pot-amount" id="pot-amount">0 €</div>
-    <div class="pot-subtitle">La cena la paga el mundial</div>
-  </div>
+  <div class="section-title">Clasificación</div>
+  <div class="ranking-list" id="ranking-list"></div>
 
-  <div class="last-update" id="last-update"></div>
-
-  <div class="section-title">Los Patrocinadores</div>
+  <div class="section-title">Patrocinadores</div>
   <div class="cards-grid" id="cards-grid"></div>
 
   <div class="section-title">Reglas</div>
   <ul class="rules-list">
-    <li><span class="rule-num">1</span>Las 8 peores selecciones del mundo según su ELO tienen un <strong>patrocinador</strong>. Si dos selecciones caen en el mismo grupo, se descarta la "mejor" y se elige la siguiente.</li>
-    <li><span class="rule-num">2</span>Por cada <strong>gol encajado</strong> por la selección en fase de grupos, el patrocinador aporta <strong>5 €</strong> al bote común.</li>
-    <li><span class="rule-num">3</span>Si la selección <strong>pasa la fase de grupos</strong>, el patrocinador aporta <strong>15 € extra</strong>.</li>
-    <li><span class="rule-num">4</span>Se celebrará una <strong>comida/cena</strong> entre los patrocinadores pagada con el bote común.</li>
+    <li><span class="rule-num">1</span><span>Las 8 peores selecciones del mundo según su ELO tienen un <strong>patrocinador</strong>. Si dos caen en el mismo grupo, se descarta la "mejor" y se elige la siguiente.</span></li>
+    <li><span class="rule-num">2</span><span>Por cada <strong>gol encajado</strong> en fase de grupos → <strong>5 € al bote</strong>.</span></li>
+    <li><span class="rule-num">3</span><span>Si la selección <strong>pasa de fase</strong> → <strong>15 € extra al bote</strong>.</span></li>
+    <li><span class="rule-num">4</span><span><strong>Comida/cena</strong> entre patrocinadores pagada con el bote común.</span></li>
   </ul>
 
 </div>
 
-<!-- Admin toggle -->
 <button class="admin-toggle" id="admin-toggle-btn" title="Admin">⚙️</button>
 
-<!-- Admin panel -->
 <div class="admin-panel" id="admin-panel">
   <h3>⚙️ Panel Admin</h3>
   <div id="admin-auth">
     <div class="auth-form">
-      <input type="password" id="admin-pass" placeholder="Contraseña de admin..." />
+      <input type="password" id="admin-pass" placeholder="Contraseña..." />
       <button class="auth-btn" onclick="checkAuth()">Entrar</button>
       <div class="auth-error" id="auth-error"></div>
     </div>
@@ -460,25 +574,22 @@
 </div>
 
 <footer>
-  <a href="https://docs.google.com/spreadsheets/d/1CcOkeOdjUXAgVcSGNDVYGcc6sOg9IYY5LmD9NhVSVus/edit?usp=sharing"
-     target="_blank" style="color: var(--text-muted); text-decoration: none;">
-    📊 Ver hoja de cálculo
-  </a>
+  <a href="https://docs.google.com/spreadsheets/d/1CcOkeOdjUXAgVcSGNDVYGcc6sOg9IYY5LmD9NhVSVus/edit?usp=sharing" target="_blank">📊 Hoja de cálculo original</a>
 </footer>
 
 <script>
-  // ─── DATOS ───────────────────────────────────────────────────────────────────
   const ADMIN_PASS = "paquete2026";
+  const API = "/api/data";
 
   const DEFAULT_DATA = {
     sponsors: [
-      { id: 1, name: "Josi",   team: "QATAR",        flag: "🇶🇦", group: "B", opponents: ["SUIZA","CANADÁ","BOSNIA Y HERZ"], goals: 0, passed: false },
-      { id: 2, name: "Raquel", team: "CURAÇAO",       flag: "🇨🇼", group: "E", opponents: ["ALEMANIA","ECUADOR","COSTA DE MARFIL"], goals: 0, passed: false },
-      { id: 3, name: "Edu",    team: "GHANA",         flag: "🇬🇭", group: "L", opponents: ["PANAMÁ","INGLATERRA","CROACIA"], goals: 0, passed: false },
-      { id: 4, name: "Carlos", team: "SUDÁFRICA",     flag: "🇿🇦", group: "A", opponents: ["MEXICO","CHEQUIA","COREA DEL SUR"], goals: 2, passed: false },
-      { id: 5, name: "Mestre", team: "HAITÍ",         flag: "🇭🇹", group: "C", opponents: ["ESCOCIA","BRASIL","MARRUECOS"], goals: 0, passed: false },
-      { id: 6, name: "Mario",  team: "NUEVA ZELANDA", flag: "🇳🇿", group: "G", opponents: ["IRÁN","EGIPTO","BÉLGICA"], goals: 0, passed: false },
-      { id: 7, name: "Vero",   team: "ARABIA SAUDÍ",  flag: "🇸🇦", group: "F", opponents: ["URUGUAY","ESPAÑA","CABO VERDE"], goals: 0, passed: false },
+      { id:1, name:"Josi",   team:"QATAR",        flag:"🇶🇦", group:"B", opponents:["🇨🇭 SUIZA","🇨🇦 CANADÁ","🇧🇦 BOSNIA Y HERZ"], goals:0, passed:false },
+      { id:2, name:"Raquel", team:"CURAÇAO",       flag:"🇨🇼", group:"E", opponents:["🇩🇪 ALEMANIA","🇪🇨 ECUADOR","🇨🇮 COSTA DE MARFIL"], goals:0, passed:false },
+      { id:3, name:"Edu",    team:"GHANA",         flag:"🇬🇭", group:"L", opponents:["🇵🇦 PANAMÁ","🏴󠁧󠁢󠁥󠁮󠁧󠁿 INGLATERRA","🇭🇷 CROACIA"], goals:0, passed:false },
+      { id:4, name:"Carlos", team:"SUDÁFRICA",     flag:"🇿🇦", group:"A", opponents:["🇲🇽 MEXICO","🇨🇿 CHEQUIA","🇰🇷 COREA DEL SUR"], goals:2, passed:false },
+      { id:5, name:"Mestre", team:"HAITÍ",         flag:"🇭🇹", group:"C", opponents:["🏴󠁧󠁢󠁳󠁣󠁴󠁿 ESCOCIA","🇧🇷 BRASIL","🇲🇦 MARRUECOS"], goals:0, passed:false },
+      { id:6, name:"Mario",  team:"NUEVA ZELANDA", flag:"🇳🇿", group:"G", opponents:["🇮🇷 IRÁN","🇪🇬 EGIPTO","🇧🇪 BÉLGICA"], goals:0, passed:false },
+      { id:7, name:"Vero",   team:"ARABIA SAUDÍ",  flag:"🇸🇦", group:"F", opponents:["🇺🇾 URUGUAY","🇪🇸 ESPAÑA","🇨🇻 CABO VERDE"], goals:0, passed:false },
     ],
     lastUpdate: null,
   };
@@ -486,24 +597,16 @@
   const GOAL_BONUS = 5;
   const PASS_BONUS = 15;
 
-  // ─── ESTADO ──────────────────────────────────────────────────────────────────
   let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
   let adminOpen = false;
   let authenticated = false;
-
-  const API = "/api/data";
 
   async function fetchData() {
     try {
       const res = await fetch(API);
       const remote = await res.json();
-      if (remote && remote.sponsors) {
-        data = remote;
-        render();
-      }
-    } catch (e) {
-      console.warn("No se pudo conectar con la API, usando datos locales.");
-    }
+      if (remote && remote.sponsors) { data = remote; render(); }
+    } catch (e) { console.warn("API no disponible, usando datos por defecto."); }
   }
 
   async function saveData() {
@@ -517,91 +620,79 @@
       if (!res.ok) { showToast("Error al guardar ✗"); return; }
       const json = await res.json();
       if (json.ok) { await fetchData(); showToast("Guardado ✓"); }
-    } catch (e) {
-      showToast("Error de red ✗");
-    }
+    } catch (e) { showToast("Error de red ✗"); }
   }
 
-  // ─── CÁLCULOS ────────────────────────────────────────────────────────────────
-  function contribution(s) {
-    return s.goals * GOAL_BONUS + (s.passed ? PASS_BONUS : 0);
-  }
+  function contribution(s) { return s.goals * GOAL_BONUS + (s.passed ? PASS_BONUS : 0); }
+  function totalPot() { return data.sponsors.reduce((sum, s) => sum + contribution(s), 0); }
 
-  function totalPot() {
-    return data.sponsors.reduce((sum, s) => sum + contribution(s), 0);
-  }
-
-  // ─── FLAGS DE RIVALES ────────────────────────────────────────────────────────
-  const flagMap = {
-    "SUIZA": "🇨🇭", "CANADÁ": "🇨🇦", "BOSNIA Y HERZ": "🇧🇦",
-    "ALEMANIA": "🇩🇪", "ECUADOR": "🇪🇨", "COSTA DE MARFIL": "🇨🇮",
-    "PANAMÁ": "🇵🇦", "INGLATERRA": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "CROACIA": "🇭🇷",
-    "MEXICO": "🇲🇽", "CHEQUIA": "🇨🇿", "COREA DEL SUR": "🇰🇷",
-    "ESCOCIA": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "BRASIL": "🇧🇷", "MARRUECOS": "🇲🇦",
-    "IRÁN": "🇮🇷", "EGIPTO": "🇪🇬", "BÉLGICA": "🇧🇪",
-    "URUGUAY": "🇺🇾", "ESPAÑA": "🇪🇸", "CABO VERDE": "🇨🇻",
-  };
-
-  // ─── RENDER ──────────────────────────────────────────────────────────────────
   function render() {
     // Pot
-    const pot = totalPot();
-    document.getElementById("pot-amount").textContent = pot + " €";
+    document.getElementById("pot-amount").textContent = totalPot() + " €";
 
     // Last update
     const lu = document.getElementById("last-update");
     if (data.lastUpdate) {
       const d = new Date(data.lastUpdate);
-      lu.textContent = "Última actualización: " + d.toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+      lu.textContent = "Actualizado: " + d.toLocaleString("es-ES", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" });
     }
 
+    // Ranking
+    const sorted = [...data.sponsors].sort((a, b) => contribution(b) - contribution(a));
+    const medals = ["🥇","🥈","🥉"];
+    document.getElementById("ranking-list").innerHTML = sorted.map((s, i) => {
+      const c = contribution(s);
+      return `<div class="ranking-row">
+        <div class="rank-num">${medals[i] || (i+1)}</div>
+        <div class="rank-flag">${s.flag}</div>
+        <div class="rank-names">
+          <div class="rank-sponsor">${s.name}</div>
+          <div class="rank-team">${s.team} · GRP ${s.group}</div>
+        </div>
+        <div class="rank-amount ${c === 0 ? 'zero' : ''}">${c} €</div>
+      </div>`;
+    }).join("");
+
     // Cards
-    const grid = document.getElementById("cards-grid");
-    grid.innerHTML = data.sponsors.map(s => {
+    document.getElementById("cards-grid").innerHTML = data.sponsors.map(s => {
       const contrib = contribution(s);
-      const opps = s.opponents.map(o => `<span class="opp-flag">${flagMap[o] || ""}</span>${o}`).join(" · ");
-      return `
-        <div class="card ${s.goals > 0 ? "has-goals" : ""} ${s.passed ? "passed" : ""}">
-          <div class="card-header">
-            <div class="flag">${s.flag}</div>
-            <div class="card-names">
-              <div class="team-name">${s.team}</div>
-              <div class="sponsor-name">Patrocinador: <strong>${s.name}</strong></div>
-            </div>
-            <div class="group-badge">GRP ${s.group}</div>
+      return `<div class="card ${s.goals > 0 ? 'has-goals' : ''} ${s.passed ? 'passed' : ''}" data-flag="${s.flag}">
+        <div class="sponsor-hero">${s.name}</div>
+        <div class="team-row">
+          <div class="flag">${s.flag}</div>
+          <div class="team-info">
+            <div class="team-name">${s.team}</div>
           </div>
-          <div class="opponents"><strong>Rivales:</strong> ${opps}</div>
-          <div class="card-stats">
-            <div class="stat">
-              <div class="stat-value goals-val">${s.goals}</div>
-              <div class="stat-label">Goles enc.</div>
-            </div>
-            <div class="stat">
-              <div class="stat-value money-val">${contrib} €</div>
-              <div class="stat-label">Contribución</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-              <span class="passed-badge">✓ Pasó</span>
-              ${!s.passed ? `<span style="font-size:0.65rem;color:var(--text-muted);text-align:center">Fase<br>grupos</span>` : ""}
-            </div>
+          <div class="group-badge">GRP ${s.group}</div>
+        </div>
+        <div class="opponents">${s.opponents.join(" · ")}</div>
+        <div class="card-stats">
+          <div class="stat">
+            <div class="stat-value goals-val">${s.goals}</div>
+            <div class="stat-label">⚽ Goles enc.</div>
           </div>
-        </div>`;
+          <div class="stat">
+            <div class="stat-value money-val">${contrib} €</div>
+            <div class="stat-label">💰 Al bote</div>
+          </div>
+        </div>
+        <span class="passed-badge">✓ Pasó de fase</span>
+      </div>`;
     }).join("");
 
     // Admin rows
     if (authenticated) {
-      const rows = document.getElementById("admin-rows");
-      rows.innerHTML = data.sponsors.map(s => `
+      document.getElementById("admin-rows").innerHTML = data.sponsors.map(s => `
         <div class="admin-row">
           <div class="admin-row-label">
-            <strong>${s.flag} ${s.team}</strong>
-            <small>${s.name}</small>
+            <strong>${s.flag} ${s.name}</strong>
+            <small>${s.team}</small>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
             <div class="goal-controls">
-              <button class="goal-btn" onclick="changeGoals(${s.id}, -1)">−</button>
+              <button class="goal-btn" onclick="changeGoals(${s.id},-1)">−</button>
               <span class="goal-count">${s.goals}</span>
-              <button class="goal-btn" onclick="changeGoals(${s.id}, +1)">+</button>
+              <button class="goal-btn" onclick="changeGoals(${s.id},+1)">+</button>
               <span style="font-size:0.7rem;color:var(--text-muted)">⚽</span>
             </div>
             <div class="pass-toggle">
@@ -613,24 +704,18 @@
     }
   }
 
-  // ─── ADMIN ACTIONS ───────────────────────────────────────────────────────────
   function changeGoals(id, delta) {
     const s = data.sponsors.find(x => x.id === id);
-    if (!s) return;
-    s.goals = Math.max(0, s.goals + delta);
-    render();
+    if (s) { s.goals = Math.max(0, s.goals + delta); render(); }
   }
 
   function togglePass(id) {
     const s = data.sponsors.find(x => x.id === id);
-    if (!s) return;
-    s.passed = !s.passed;
-    render();
+    if (s) { s.passed = !s.passed; render(); }
   }
 
   function checkAuth() {
-    const val = document.getElementById("admin-pass").value;
-    if (val === ADMIN_PASS) {
+    if (document.getElementById("admin-pass").value === ADMIN_PASS) {
       authenticated = true;
       document.getElementById("admin-auth").style.display = "none";
       document.getElementById("admin-controls").style.display = "block";
@@ -640,16 +725,11 @@
     }
   }
 
-  document.getElementById("admin-pass").addEventListener("keydown", e => {
-    if (e.key === "Enter") checkAuth();
-  });
-
+  document.getElementById("admin-pass").addEventListener("keydown", e => { if (e.key === "Enter") checkAuth(); });
   document.getElementById("admin-toggle-btn").addEventListener("click", () => {
     adminOpen = !adminOpen;
     document.getElementById("admin-panel").classList.toggle("open", adminOpen);
   });
-
-  // Close panel when clicking outside
   document.addEventListener("click", e => {
     if (adminOpen &&
         !document.getElementById("admin-panel").contains(e.target) &&
@@ -659,25 +739,23 @@
     }
   });
 
-  // ─── TOAST ───────────────────────────────────────────────────────────────────
   function showToast(msg) {
     const t = document.createElement("div");
     t.textContent = msg;
-    t.style.cssText = `position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-      background:var(--green-light);color:#fff;padding:10px 20px;border-radius:20px;
+    t.style.cssText = `position:fixed;bottom:82px;left:50%;transform:translateX(-50%);
+      background:#1a6b2e;color:#fff;padding:10px 20px;border-radius:20px;
       font-weight:700;font-size:0.85rem;z-index:200;pointer-events:none;
       animation:fadeout 2s ease forwards;`;
     document.body.appendChild(t);
-    const style = document.createElement("style");
-    style.textContent = `@keyframes fadeout{0%{opacity:1}70%{opacity:1}100%{opacity:0}}`;
-    document.head.appendChild(style);
+    const s = document.createElement("style");
+    s.textContent = `@keyframes fadeout{0%{opacity:1}70%{opacity:1}100%{opacity:0}}`;
+    document.head.appendChild(s);
     setTimeout(() => t.remove(), 2100);
   }
 
-  // ─── INIT ────────────────────────────────────────────────────────────────────
   render();
   fetchData();
-  setInterval(fetchData, 60_000); // refresca cada 60s
+  setInterval(fetchData, 60_000);
 </script>
 </body>
 </html>
