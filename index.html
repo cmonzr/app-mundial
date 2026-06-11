@@ -724,9 +724,14 @@
       scoreHtml  = `<span class="match-score">${ourScore ?? 0} - ${oppScore ?? 0}</span>`;
       statusHtml = `<span class="match-status status-live">● LIVE</span>`;
     } else {
-      const cls  = ourScore < oppScore ? "loss" : ourScore > oppScore ? "win" : "";
-      scoreHtml  = `<span class="match-score ${cls}">${ourScore} - ${oppScore}</span>`;
-      statusHtml = `<span class="match-status status-finished">FIN</span>`;
+      if (ourScore === null || oppScore === null) {
+        scoreHtml  = `<span class="match-score">? - ?</span>`;
+        statusHtml = `<span class="match-status status-scheduled">Actualizando</span>`;
+      } else {
+        const cls  = ourScore < oppScore ? "loss" : ourScore > oppScore ? "win" : "";
+        scoreHtml  = `<span class="match-score ${cls}">${ourScore} - ${oppScore}</span>`;
+        statusHtml = `<span class="match-status status-finished">FIN</span>`;
+      }
     }
 
     return `<div class="match-row ${rowClass}">
@@ -761,9 +766,12 @@
       m.status === "FINISHED" && (m.homeTeam === apiName || m.awayTeam === apiName)
     );
     if (!finished.length) return null;
-    return finished.reduce((sum, m) => {
+    // Si algún partido terminado tiene scores null, los datos aún no son fiables → ignorar ese partido
+    const withScores = finished.filter(m => m.homeScore !== null && m.awayScore !== null);
+    if (!withScores.length) return null; // esperar a que la API tenga datos reales
+    return withScores.reduce((sum, m) => {
       const isHome = m.homeTeam === apiName;
-      return sum + (isHome ? (m.awayScore ?? 0) : (m.homeScore ?? 0));
+      return sum + (isHome ? m.awayScore : m.homeScore);
     }, 0);
   }
 
