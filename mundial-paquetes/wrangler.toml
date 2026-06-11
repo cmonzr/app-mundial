@@ -4,4 +4,4 @@ pages_build_output_dir = "."
 
 [[kv_namespaces]]
 binding = "MUNDIAL_DATA"
-id = "REEMPLAZA_CON_TU_KV_ID"
+id = "be2ff9b9da3b4fe3b7c9ced5da72fe2d"
