@@ -1,0 +1,7 @@
+name = "mundial-paquetes"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "MUNDIAL_DATA"
+id = "REEMPLAZA_CON_TU_KV_ID"
