@@ -34,16 +34,27 @@ export async function onRequestGet({ env }) {
       OUR_TEAMS.includes(m.homeTeam.name) || OUR_TEAMS.includes(m.awayTeam.name)
     );
 
-    const result = matches.map(m => ({
-      id: m.id,
-      utcDate: m.utcDate,
-      status: m.status,       // SCHEDULED | IN_PLAY | PAUSED | FINISHED
-      group: m.group,
-      homeTeam: m.homeTeam.name,
-      awayTeam: m.awayTeam.name,
-      homeScore: m.score?.fullTime?.home ?? null,
-      awayScore: m.score?.fullTime?.away ?? null,
-    }));
+    const result = matches.map(m => {
+      // La API a veces tiene fullTime null y el score real en regularTime
+      const homeScore = m.score?.fullTime?.home
+        ?? m.score?.regularTime?.home
+        ?? m.score?.halfTime?.home  // último recurso
+        ?? null;
+      const awayScore = m.score?.fullTime?.away
+        ?? m.score?.regularTime?.away
+        ?? m.score?.halfTime?.away
+        ?? null;
+      return {
+        id: m.id,
+        utcDate: m.utcDate,
+        status: m.status,
+        group: m.group,
+        homeTeam: m.homeTeam.name,
+        awayTeam: m.awayTeam.name,
+        homeScore,
+        awayScore,
+      };
+    });
 
     return new Response(JSON.stringify(result), { headers: CORS });
   } catch (e) {
