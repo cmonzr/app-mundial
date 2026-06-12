@@ -292,43 +292,23 @@
     }
     .card.passed .passed-badge { display: inline-block; }
 
-    /* PHOTO STRIP */
-    .card-photo {
-      margin-top: 14px;
-      border-radius: 10px;
-      overflow: hidden;
-      height: 90px;
-      cursor: pointer;
-      position: relative;
-      border: 1px solid var(--card-border);
-    }
-    .card-photo img {
-      width: 100%;
-      height: 100%;
+    /* SPONSOR AVATAR */
+    .sponsor-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
       object-fit: cover;
       object-position: center top;
-      transition: transform 0.3s ease;
-      display: block;
+      border: 2px solid var(--card-border);
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s;
+      flex-shrink: 0;
     }
-    .card-photo:hover img { transform: scale(1.05); }
-    .card-photo-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
-      display: flex;
-      align-items: flex-end;
-      padding: 8px;
-      opacity: 0;
-      transition: opacity 0.2s;
+    .sponsor-avatar:hover {
+      border-color: var(--gold);
+      transform: scale(1.08);
     }
-    .card-photo:hover .card-photo-overlay { opacity: 1; }
-    .card-photo-overlay span {
-      font-size: 0.65rem;
-      color: #fff;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
+    .card.passed .sponsor-avatar { border-color: var(--gold); }
 
     /* MODAL */
     .photo-modal {
@@ -950,7 +930,10 @@
     document.getElementById("cards-grid").innerHTML = data.sponsors.map(s => {
       const contrib = contribution(s);
       return `<div class="card ${s.goals > 0 ? 'has-goals' : ''} ${s.passed ? 'passed' : ''}" data-flag="${s.flag}">
-        <div class="sponsor-hero">${s.name}</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+          ${s.photo ? `<img class="sponsor-avatar" src="${s.photo}" alt="${s.name}" onclick="openPhotoModal(${s.id})">` : ''}
+          <div class="sponsor-hero" style="margin-bottom:0">${s.name}</div>
+        </div>
         <div class="team-row">
           <div class="flag">${s.flag}</div>
           <div class="team-info">
@@ -975,11 +958,6 @@
           if (!ms.length) return '';
           return `<div class="matches-section">${ms.map(m => renderMatch(m, s.id)).join('')}</div>`;
         })()}
-        ${s.photo ? `
-        <div class="card-photo" onclick="openPhotoModal(${s.id})">
-          <img src="${s.photo}" alt="${s.name}">
-          <div class="card-photo-overlay"><span>Ver foto</span></div>
-        </div>` : ''}
       </div>`;
     }).join("");
 
