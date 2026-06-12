@@ -1171,9 +1171,10 @@
       URL.revokeObjectURL(url);
       crop.img = img;
       crop.sponsorId = sponsorId;
-      // Escala inicial: que la imagen cubra el círculo de recorte
-      const minDim = Math.min(img.width, img.height);
-      crop.scale = (crop.radius * 2) / minDim;
+      // Escala inicial: que la imagen cubra el rectángulo de recorte
+      const scaleW = crop.rectW / img.width;
+      const scaleH = crop.rectH / img.height;
+      crop.scale = Math.max(scaleW, scaleH);
       crop.minScale = crop.scale * 0.5;
       crop.maxScale = crop.scale * 5;
       crop.offsetX = (crop.canvasSize - img.width * crop.scale) / 2;
