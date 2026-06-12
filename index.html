@@ -294,8 +294,8 @@
 
     /* SPONSOR AVATAR */
     .sponsor-avatar {
-      width: 44px;
-      height: 44px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
       object-fit: cover;
       object-position: center top;
@@ -306,7 +306,7 @@
     }
     .sponsor-avatar:hover {
       border-color: var(--gold);
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
     .card.passed .sponsor-avatar { border-color: var(--gold); }
 
@@ -1043,16 +1043,15 @@
     document.getElementById("cards-grid").innerHTML = data.sponsors.map(s => {
       const contrib = contribution(s);
       return `<div class="card ${s.goals > 0 ? 'has-goals' : ''} ${s.passed ? 'passed' : ''}" data-flag="${s.flag}">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:2px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
           ${s.photo ? `<img class="sponsor-avatar" src="${s.photo}" alt="${s.name}" onclick="openPhotoModal(${s.id})">` : ''}
-          <div class="sponsor-hero" style="margin-bottom:0">${s.name}</div>
-        </div>
-        <div class="team-row">
-          <div class="flag">${s.flag}</div>
-          <div class="team-info">
-            <div class="team-name">${s.team}</div>
+          <div style="flex:1;min-width:0">
+            <div class="sponsor-hero" style="margin-bottom:4px">${s.name}</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="team-name">${s.flag} ${s.team}</span>
+              <div class="group-badge">GRP ${s.group}</div>
+            </div>
           </div>
-          <div class="group-badge">GRP ${s.group}</div>
         </div>
         <div class="opponents">${s.opponents.join(" · ")}</div>
         <div class="card-stats">
