@@ -292,6 +292,133 @@
     }
     .card.passed .passed-badge { display: inline-block; }
 
+    /* PHOTO STRIP */
+    .card-photo {
+      margin-top: 14px;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 90px;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid var(--card-border);
+    }
+    .card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.3s ease;
+      display: block;
+    }
+    .card-photo:hover img { transform: scale(1.05); }
+    .card-photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+      display: flex;
+      align-items: flex-end;
+      padding: 8px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .card-photo:hover .card-photo-overlay { opacity: 1; }
+    .card-photo-overlay span {
+      font-size: 0.65rem;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* MODAL */
+    .photo-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .photo-modal.open { display: flex; }
+    .photo-modal-inner {
+      position: relative;
+      max-width: 600px;
+      width: 100%;
+      animation: modal-in 0.2s ease;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .photo-modal img {
+      width: 100%;
+      border-radius: 16px;
+      display: block;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+    .photo-modal-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: #fff;
+      text-align: center;
+      margin-top: 14px;
+      letter-spacing: 2px;
+    }
+    .modal-close {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    /* UPLOAD in admin */
+    .photo-upload-row {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .photo-upload-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0a0f0c;
+      border: 1px dashed var(--card-border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      transition: border-color 0.2s;
+      flex: 1;
+    }
+    .photo-upload-label:hover { border-color: var(--gold); color: var(--gold); }
+    .photo-upload-label input { display: none; }
+    .photo-thumb {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--card-border);
+      display: none;
+    }
+    .photo-thumb.visible { display: block; }
+
     /* MATCHES */
     .matches-section {
       margin-top: 14px;
@@ -635,6 +762,15 @@
   </div>
 </div>
 
+<!-- Modal foto -->
+<div class="photo-modal" id="photo-modal" onclick="closeModal(event)">
+  <div class="photo-modal-inner">
+    <button class="modal-close" onclick="closePhotoModal()">✕</button>
+    <img id="modal-img" src="" alt="">
+    <div class="photo-modal-name" id="modal-name"></div>
+  </div>
+</div>
+
 <footer>
   <a href="https://docs.google.com/spreadsheets/d/1CcOkeOdjUXAgVcSGNDVYGcc6sOg9IYY5LmD9NhVSVus/edit?usp=sharing" target="_blank">📊 Hoja de cálculo original</a>
 </footer>
@@ -839,6 +975,11 @@
           if (!ms.length) return '';
           return `<div class="matches-section">${ms.map(m => renderMatch(m, s.id)).join('')}</div>`;
         })()}
+        ${s.photo ? `
+        <div class="card-photo" onclick="openPhotoModal(${s.id})">
+          <img src="${s.photo}" alt="${s.name}">
+          <div class="card-photo-overlay"><span>Ver foto</span></div>
+        </div>` : ''}
       </div>`;
     }).join("");
 
@@ -858,6 +999,13 @@
           <div class="pass-toggle">
             <input type="checkbox" id="pass-${s.id}" ${s.passed ? "checked" : ""} onchange="togglePass(${s.id})">
             <label for="pass-${s.id}">Pasó (+15€)</label>
+          </div>
+          <div class="photo-upload-row">
+            <label class="photo-upload-label">
+              <input type="file" accept="image/*" onchange="handlePhotoUpload(${s.id}, this)">
+              📷 ${s.photo ? 'Cambiar foto' : 'Subir foto'}
+            </label>
+            ${s.photo ? `<img class="photo-thumb visible" src="${s.photo}" alt="">` : ''}
           </div>
         </div>`).join("");
     }
@@ -897,6 +1045,51 @@
       document.getElementById("admin-panel").classList.remove("open");
     }
   });
+
+  // ─── FOTOS ───────────────────────────────────────────────────────────────────
+  function compressImage(file, maxPx = 900, quality = 0.75) {
+    return new Promise(resolve => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const ratio = Math.min(maxPx / img.width, maxPx / img.height, 1);
+        const canvas = document.createElement("canvas");
+        canvas.width  = Math.round(img.width  * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = url;
+    });
+  }
+
+  async function handlePhotoUpload(sponsorId, input) {
+    const file = input.files[0];
+    if (!file) return;
+    const b64 = await compressImage(file);
+    const s = data.sponsors.find(x => x.id === sponsorId);
+    if (s) s.photo = b64;
+    render();
+  }
+
+  function openPhotoModal(sponsorId) {
+    const s = data.sponsors.find(x => x.id === sponsorId);
+    if (!s?.photo) return;
+    document.getElementById("modal-img").src   = s.photo;
+    document.getElementById("modal-name").textContent = s.name + " · " + s.team;
+    document.getElementById("photo-modal").classList.add("open");
+  }
+
+  function closePhotoModal() {
+    document.getElementById("photo-modal").classList.remove("open");
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById("photo-modal")) closePhotoModal();
+  }
+
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closePhotoModal(); });
 
   function showToast(msg) {
     const t = document.createElement("div");
