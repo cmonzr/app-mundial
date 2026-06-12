@@ -294,9 +294,9 @@
 
     /* SPONSOR AVATAR */
     .sponsor-avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
+      width: 56px;
+      height: 68px;
+      border-radius: 8px;
       object-fit: cover;
       object-position: center top;
       border: 2px solid var(--card-border);
@@ -306,7 +306,7 @@
     }
     .sponsor-avatar:hover {
       border-color: var(--gold);
-      transform: scale(1.06);
+      transform: scale(1.04);
     }
     .card.passed .sponsor-avatar { border-color: var(--gold); }
 
@@ -365,6 +365,9 @@
       justify-content: center;
       line-height: 1;
     }
+
+    /* CROP PREVIEW — rectangular */
+    #preview-canvas { border-radius: 6px !important; }
 
     /* CROP MODAL */
     .crop-modal {
@@ -1149,8 +1152,15 @@
     lastX: 0,
     lastY: 0,
     canvasSize: 320,
-    radius: 130,
+    // Rectángulo de recorte (centrado en el canvas)
+    rectW: 168,   // ancho  — proporción 56:68 × 3
+    rectH: 204,
   };
+  // helpers
+  function cropRect() {
+    const cx = crop.canvasSize / 2, cy = crop.canvasSize / 2;
+    return { x: cx - crop.rectW/2, y: cy - crop.rectH/2, w: crop.rectW, h: crop.rectH };
+  }
 
   function handlePhotoUpload(sponsorId, input) {
     const file = input.files[0];
@@ -1183,8 +1193,15 @@
     const sz = crop.canvasSize;
     const canvas = document.getElementById("crop-canvas");
     canvas.width = sz; canvas.height = sz;
-    canvas.style.width  = Math.min(sz, window.innerWidth - 48) + "px";
-    canvas.style.height = Math.min(sz, window.innerWidth - 48) + "px";
+    const disp = Math.min(sz, window.innerWidth - 48);
+    canvas.style.width  = disp + "px";
+    canvas.style.height = disp + "px";
+    // Ajusta preview aspect ratio
+    const pCanvas = document.getElementById("preview-canvas");
+    const pW = 56, pH = 68;
+    pCanvas.width = pW; pCanvas.height = pH;
+    pCanvas.style.width  = pW + "px";
+    pCanvas.style.height = pH + "px";
     document.getElementById("crop-modal").classList.add("open");
     bindCropEvents();
   }
@@ -1193,34 +1210,32 @@
     const canvas = document.getElementById("crop-canvas");
     const ctx = canvas.getContext("2d");
     const sz = crop.canvasSize;
-    const cx = sz / 2, cy = sz / 2, r = crop.radius;
+    const r = cropRect();
 
     ctx.clearRect(0, 0, sz, sz);
     ctx.drawImage(crop.img, crop.offsetX, crop.offsetY,
       crop.img.width * crop.scale, crop.img.height * crop.scale);
 
-    // Overlay oscuro con agujero circular
+    // Overlay oscuro con agujero rectangular
     ctx.save();
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
+    ctx.fillStyle = "rgba(0,0,0,0.58)";
     ctx.beginPath();
     ctx.rect(0, 0, sz, sz);
-    ctx.arc(cx, cy, r, 0, Math.PI * 2, true);
+    ctx.rect(r.x, r.y, r.w, r.h);  // "sustrae" el rectángulo
     ctx.fill("evenodd");
 
-    // Borde del círculo
-    ctx.beginPath();
-    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    // Borde del rectángulo
     ctx.strokeStyle = "#f5c518";
     ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.restore();
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
 
-    // Cruceta central tenue
-    ctx.save();
-    ctx.strokeStyle = "rgba(255,255,255,0.15)";
+    // Regla de tercios tenue
+    ctx.strokeStyle = "rgba(255,255,255,0.12)";
     ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(cx - 12, cy); ctx.lineTo(cx + 12, cy); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx, cy - 12); ctx.lineTo(cx, cy + 12); ctx.stroke();
+    for (let i = 1; i < 3; i++) {
+      ctx.beginPath(); ctx.moveTo(r.x + r.w * i/3, r.y); ctx.lineTo(r.x + r.w * i/3, r.y + r.h); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(r.x, r.y + r.h * i/3); ctx.lineTo(r.x + r.w, r.y + r.h * i/3); ctx.stroke();
+    }
     ctx.restore();
 
     updatePreview();
@@ -1229,31 +1244,20 @@
   function updatePreview() {
     const pCanvas = document.getElementById("preview-canvas");
     const pCtx = pCanvas.getContext("2d");
-    const pSz = pCanvas.width;
-    const sz = crop.canvasSize;
-    const cx = sz / 2, cy = sz / 2, r = crop.radius;
-    pCtx.clearRect(0, 0, pSz, pSz);
-    pCtx.save();
-    pCtx.beginPath();
-    pCtx.arc(pSz / 2, pSz / 2, pSz / 2, 0, Math.PI * 2);
-    pCtx.clip();
+    const r = cropRect();
+    pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
     pCtx.drawImage(document.getElementById("crop-canvas"),
-      cx - r, cy - r, r * 2, r * 2,
-      0, 0, pSz, pSz
+      r.x, r.y, r.w, r.h,
+      0, 0, pCanvas.width, pCanvas.height
     );
-    pCtx.restore();
   }
 
   function clampOffset() {
-    // Asegura que el círculo de recorte siempre esté cubierto por la imagen
-    const sz = crop.canvasSize;
-    const cx = sz / 2, cy = sz / 2, r = crop.radius;
+    const r = cropRect();
     const iw = crop.img.width  * crop.scale;
     const ih = crop.img.height * crop.scale;
-    const maxX = cx - r,        maxY = cy - r;
-    const minX = cx + r - iw,   minY = cy + r - ih;
-    crop.offsetX = Math.min(maxX, Math.max(minX, crop.offsetX));
-    crop.offsetY = Math.min(maxY, Math.max(minY, crop.offsetY));
+    crop.offsetX = Math.min(r.x, Math.max(r.x + r.w - iw, crop.offsetX));
+    crop.offsetY = Math.min(r.y, Math.max(r.y + r.h - ih, crop.offsetY));
   }
 
   function onZoomSlider() {
@@ -1333,18 +1337,25 @@
   }
 
   function applyCrop() {
-    const sz = crop.canvasSize;
-    const cx = sz / 2, cy = sz / 2, r = crop.radius;
-    const out = document.createElement("canvas");
-    out.width = out.height = r * 2;
-    const ctx = out.getContext("2d");
-    ctx.drawImage(document.getElementById("crop-canvas"),
-      cx - r, cy - r, r * 2, r * 2,
-      0, 0, r * 2, r * 2
-    );
-    const b64 = out.toDataURL("image/jpeg", 0.82);
+    const r = cropRect();
+    // Miniatura recortada
+    const thumb = document.createElement("canvas");
+    thumb.width = r.w; thumb.height = r.h;
+    thumb.getContext("2d").drawImage(document.getElementById("crop-canvas"),
+      r.x, r.y, r.w, r.h, 0, 0, r.w, r.h);
+    // Foto completa comprimida (para el modal)
+    const full = document.createElement("canvas");
+    const maxPx = 1000;
+    const ratio = Math.min(maxPx / crop.img.width, maxPx / crop.img.height, 1);
+    full.width  = Math.round(crop.img.width  * ratio);
+    full.height = Math.round(crop.img.height * ratio);
+    full.getContext("2d").drawImage(crop.img, 0, 0, full.width, full.height);
+
     const s = data.sponsors.find(x => x.id === crop.sponsorId);
-    if (s) s.photo = b64;
+    if (s) {
+      s.photo     = thumb.toDataURL("image/jpeg", 0.85);
+      s.photoFull = full.toDataURL("image/jpeg", 0.80);
+    }
     cancelCrop();
     render();
   }
@@ -1357,7 +1368,7 @@
   function openPhotoModal(sponsorId) {
     const s = data.sponsors.find(x => x.id === sponsorId);
     if (!s?.photo) return;
-    document.getElementById("modal-img").src   = s.photo;
+    document.getElementById("modal-img").src = s.photoFull || s.photo;
     document.getElementById("modal-name").textContent = s.name + " · " + s.team;
     document.getElementById("photo-modal").classList.add("open");
   }
