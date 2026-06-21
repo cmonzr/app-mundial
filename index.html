@@ -138,6 +138,53 @@
       margin-top: 10px;
     }
 
+    /* LIVE BANNER */
+    .live-banner {
+      margin-top: 16px;
+      background: linear-gradient(90deg, #1a3d22, #0f2417, #1a3d22);
+      border: 2px solid var(--green-light);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: live-glow 1.8s ease-in-out infinite;
+    }
+    @keyframes live-glow {
+      0%, 100% { box-shadow: 0 0 0px rgba(46,204,113,0); }
+      50% { box-shadow: 0 0 18px rgba(46,204,113,0.45); }
+    }
+    .live-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #ff3b30;
+      flex-shrink: 0;
+      animation: blink 1s ease-in-out infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+    .live-banner-content { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .live-banner-label {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--green-light);
+      text-transform: uppercase;
+    }
+    .live-match-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+    .live-match-line .lm-team { font-weight: 700; color: #fff; }
+    .live-match-line .lm-score {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+    .live-match-line .lm-vs { color: var(--text-muted); font-size: 0.7rem; }
+
     /* MAIN */
     .main {
       max-width: 960px;
@@ -799,6 +846,7 @@
     <div class="pot-subtitle">Para la cena de los patrocinadores</div>
   </div>
   <div class="last-update" id="last-update"></div>
+  <div id="live-banner-wrap"></div>
 </div>
 
 <div class="main">
@@ -1030,7 +1078,33 @@
     const lu = document.getElementById("last-update");
     if (lastFetchTime) {
       const hour = lastFetchTime.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" });
-      lu.textContent = "🔴 En vivo · datos actualizados a las " + hour;
+      lu.textContent = "Datos actualizados a las " + hour;
+    }
+
+    // Banner de partidos en directo de nuestros equipos
+    const liveMatches = matchesData.filter(m => m.status === "IN_PLAY" || m.status === "PAUSED");
+    const banner = document.getElementById("live-banner-wrap");
+    if (liveMatches.length) {
+      banner.innerHTML = `
+        <div class="live-banner">
+          <div class="live-dot"></div>
+          <div class="live-banner-content">
+            <div class="live-banner-label">⚽ Partido en directo</div>
+            ${liveMatches.map(m => {
+              const sHome = data.sponsors.find(s => Object.entries(TEAM_API_MAP).find(([n,id]) => n === m.homeTeam && id === s.id));
+              const sAway = data.sponsors.find(s => Object.entries(TEAM_API_MAP).find(([n,id]) => n === m.awayTeam && id === s.id));
+              const homeLabel = sHome ? sHome.team : m.homeTeam;
+              const awayLabel = sAway ? sAway.team : m.awayTeam;
+              return `<div class="live-match-line">
+                <span class="lm-team">${homeLabel}</span>
+                <span class="lm-score">${m.homeScore ?? 0} - ${m.awayScore ?? 0}</span>
+                <span class="lm-team">${awayLabel}</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`;
+    } else {
+      banner.innerHTML = '';
     }
 
     // Ranking
