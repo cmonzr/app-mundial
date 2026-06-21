@@ -994,12 +994,14 @@
   function goalsFromAPI(sponsorId) {
     const apiName = Object.entries(TEAM_API_MAP).find(([,id]) => id === sponsorId)?.[0];
     if (!apiName) return null;
-    const finished = matchesData.filter(m =>
-      m.status === "FINISHED" && (m.homeTeam === apiName || m.awayTeam === apiName)
+    // Cuenta partidos terminados Y en directo (para que el bote suba con el marcador en vivo)
+    const relevant = matchesData.filter(m =>
+      (m.status === "FINISHED" || m.status === "IN_PLAY" || m.status === "PAUSED") &&
+      (m.homeTeam === apiName || m.awayTeam === apiName)
     );
-    if (!finished.length) return null;
-    // Si algún partido terminado tiene scores null, los datos aún no son fiables → ignorar ese partido
-    const withScores = finished.filter(m => m.homeScore !== null && m.awayScore !== null);
+    if (!relevant.length) return null;
+    // Si algún partido tiene scores null, los datos aún no son fiables → ignorar ese partido
+    const withScores = relevant.filter(m => m.homeScore !== null && m.awayScore !== null);
     if (!withScores.length) return null; // esperar a que la API tenga datos reales
     return withScores.reduce((sum, m) => {
       const isHome = m.homeTeam === apiName;
@@ -1401,7 +1403,20 @@
   render();
   fetchData();
   fetchMatches();
-  setInterval(() => { fetchData(); fetchMatches(); }, 60_000);
+
+  function hasLiveMatch() {
+    return matchesData.some(m => m.status === "IN_PLAY" || m.status === "PAUSED");
+  }
+
+  function scheduleRefresh() {
+    const delay = hasLiveMatch() ? 15_000 : 60_000;
+    setTimeout(async () => {
+      await fetchData();
+      await fetchMatches();
+      scheduleRefresh();
+    }, delay);
+  }
+  scheduleRefresh();
 </script>
 </body>
 </html>
