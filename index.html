@@ -633,6 +633,18 @@
     }
     .ranking-row:first-child .rank-num { color: var(--gold); font-size: 1.8rem; }
     .rank-flag { font-size: 1.4rem; }
+    .rank-avatar {
+      width: 38px;
+      height: 46px;
+      border-radius: 6px;
+      object-fit: cover;
+      object-position: center top;
+      border: 2px solid var(--card-border);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .rank-avatar:hover { border-color: var(--gold); transform: scale(1.05); }
     .rank-names { flex: 1; }
     .rank-sponsor {
       font-family: 'Bebas Neue', sans-serif;
@@ -1114,7 +1126,9 @@
       const c = contribution(s);
       return `<div class="ranking-row">
         <div class="rank-num">${medals[i] || (i+1)}</div>
-        <div class="rank-flag">${s.flag}</div>
+        ${s.photo
+          ? `<img class="rank-avatar" src="${s.photo}" alt="${s.name}" onclick="openPhotoModal(${s.id})">`
+          : `<div class="rank-flag">${s.flag}</div>`}
         <div class="rank-names">
           <div class="rank-sponsor">${s.name}</div>
           <div class="rank-team">${s.team} · GRP ${s.group}</div>
