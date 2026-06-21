@@ -887,6 +887,7 @@
   };
 
   let matchesData = []; // partidos de la API
+  let lastFetchTime = null;
 
   const DEFAULT_DATA = {
     sponsors: [
@@ -920,7 +921,11 @@
     try {
       const res = await fetch("/api/matches");
       const json = await res.json();
-      if (Array.isArray(json)) { matchesData = json; render(); }
+      if (Array.isArray(json)) {
+        matchesData = json;
+        lastFetchTime = new Date();
+        render();
+      }
     } catch (e) { console.warn("No se pudieron cargar los partidos."); }
   }
 
@@ -1021,11 +1026,11 @@
     // Pot
     document.getElementById("pot-amount").textContent = totalPot() + " €";
 
-    // Last update
+    // Last live refresh (datos de partidos), no confundir con el guardado del admin
     const lu = document.getElementById("last-update");
-    if (data.lastUpdate) {
-      const d = new Date(data.lastUpdate);
-      lu.textContent = "Actualizado: " + d.toLocaleString("es-ES", { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" });
+    if (lastFetchTime) {
+      const hour = lastFetchTime.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" });
+      lu.textContent = "🔴 En vivo · datos actualizados a las " + hour;
     }
 
     // Ranking
